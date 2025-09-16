@@ -139,9 +139,7 @@ namespace Knv.Sample.THDWithPCI5114
                     var rawValue = waveforms[0].Samples[rowIndex].Value;
                     byte byteValue = Convert.ToByte(rawValue);
                     sbyte signedValue = unchecked((sbyte)byteValue);
-
                     wfs.Waveforms[0].YArray[rowIndex] = signedValue;
-
                 }
 
                 if (!File.Exists(directory))
