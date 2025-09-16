@@ -126,14 +126,13 @@ namespace Knv.Sample.THDWithPCI5114
                 //   0  |----------------------------
                 //      |
                 //-128  |
+                */
 
                 string directory = "D:\\";
                 string prefix = "Knv.Sample.THDWithPCI5114";
-                wfs.Waveforms.Add(new Waveform() { Name = "1KHz Signal" });
-                wfs.Waveforms[0].YArray = new double[waveforms[0].SampleCount];
-
                 var wfs = new WaveformStorage();
-                wfs.Waveforms[0] = new Waveform() { Name = "1kHz 4Vpp 50kSPS", DeltaX = 1.0 / SAMPLE_RATE_HZ };
+                wfs.Waveforms.Add(new Waveform() { Name = "1KHz Signal", DeltaX = 1.0 / SAMPLE_RATE_HZ  });
+                wfs.Waveforms[0].YArray = new double[waveforms[0].SampleCount];
 
                 for (rowIndex = 0; rowIndex < waveforms[0].SampleCount; rowIndex++)
                 { 
