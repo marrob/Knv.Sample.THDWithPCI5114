@@ -126,13 +126,14 @@ namespace Knv.Sample.THDWithPCI5114
             {
                 int rowIndex;
 
+                /*
                 double[][] scaledRecords = new double[waveforms.Count][];
 
                 for (int i = 0; i < waveforms.Count; i++)
                 {
                     scaledRecords[i] = waveforms[i].GetScaledData();
                 }
-
+                */
 
                 // -128... -3, -2, -1, 0, 1, 2, 3 ... 127
                 //
@@ -146,8 +147,9 @@ namespace Knv.Sample.THDWithPCI5114
                 string prefix = "Knv.Sample.THDWithPCI5114";
                 var lines = new List<string>();
                 var wfs = new WaveformStorage();
-                wfs.Waveforms[0] = new Waveform() { Name = "Channel0" };
 
+                wfs.Waveforms.Add(new Waveform() { Name = "1KHz Signal" });
+                wfs.Waveforms[0].YArray = new double[waveforms[0].SampleCount];
 
 
                 lines.Add($"RowIndex;rawValue;byteValue;signedValue");
@@ -157,6 +159,9 @@ namespace Knv.Sample.THDWithPCI5114
                     var rawValue = waveforms[0].Samples[rowIndex].Value;
                     byte byteValue = Convert.ToByte(rawValue);
                     sbyte signedValue = unchecked((sbyte)byteValue);
+
+                    wfs.Waveforms[0].YArray[rowIndex] = signedValue;
+
                     lines.Add($"{rowIndex};{rawValue};{byteValue};{signedValue}");
                 }
 
@@ -166,7 +171,7 @@ namespace Knv.Sample.THDWithPCI5114
 
                 var dt = DateTime.Now;
                 var fileName = $"{prefix}_{dt:yyyy}{dt:MM}{dt:dd}_{dt:HH}{dt:mm}{dt:ss}.csv";
-                wfs.SaveToCsv(fileName);
+                wfs.SaveToCsv($"{directory}\\{fileName}");
 
                 /*
                 using (var file = new StreamWriter($"{directory}\\{fileName}", true, Encoding.ASCII))

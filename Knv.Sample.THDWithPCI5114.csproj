@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Knv.Sample.THDWithPCI5114</RootNamespace>
     <AssemblyName>Knv.Sample.THDWithPCI5114</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <StartupObject>Knv.Sample.THDWithPCI5114.Program</StartupObject>
