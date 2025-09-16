@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Knv.Sample.THDWithPCI5114</RootNamespace>
     <AssemblyName>Knv.Sample.THDWithPCI5114</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <StartupObject>Knv.Sample.THDWithPCI5114.Program</StartupObject>
@@ -43,9 +43,15 @@
     <Reference Include="NationalInstruments.ModularInstruments.NIScope.Fx45" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppConstants.cs" />
+    <Compile Include="Data\CsvImport.cs" />
+    <Compile Include="Data\Waveform.cs" />
+    <Compile Include="Data\WaveformCollection.cs" />
+    <Compile Include="Data\WaveformStorage.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,4 +1,5 @@
 using Ivi.Scope;
+using Knv.Sample.THDWithPCI5114.Data;
 using NationalInstruments;
 using NationalInstruments.DataInfrastructure;
 using NationalInstruments.ModularInstruments.NIScope;
@@ -144,7 +145,11 @@ namespace Knv.Sample.THDWithPCI5114
                 string directory = "D:\\";
                 string prefix = "Knv.Sample.THDWithPCI5114";
                 var lines = new List<string>();
-                
+                var wfs = new WaveformStorage();
+                wfs.Waveforms[0] = new Waveform() { Name = "Channel0" };
+
+
+
                 lines.Add($"RowIndex;rawValue;byteValue;signedValue");
                 
                 for (rowIndex = 0; rowIndex < waveforms[0].SampleCount; rowIndex++)
@@ -161,8 +166,12 @@ namespace Knv.Sample.THDWithPCI5114
 
                 var dt = DateTime.Now;
                 var fileName = $"{prefix}_{dt:yyyy}{dt:MM}{dt:dd}_{dt:HH}{dt:mm}{dt:ss}.csv";
+                wfs.SaveToCsv(fileName);
+
+                /*
                 using (var file = new StreamWriter($"{directory}\\{fileName}", true, Encoding.ASCII))
                     lines.ForEach(file.WriteLine);
+                */
             }
 
             void CloseSession()
