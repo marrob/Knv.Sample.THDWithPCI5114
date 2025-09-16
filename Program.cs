@@ -27,28 +27,26 @@ namespace Knv.Sample.THDWithPCI5114
               new App();
         }
 
-
-
         class App
         {
             NIScope _scopeSession;
             readonly MainForm _mainForm;
+            const double SAMPLE_RATE_HZ = 50000;
+            const int   SAMPLES_COUNT = 2000;
             public App()
             {
                 _mainForm = new MainForm();
-
-
                 StartAcquisition(
                     resourceName: "PCI-5114-Scope",
                     channelName: "0",
                     verticalRange: 10.0,
                     verticalOffset: 0.0,
-                    sampleRateMin: 500000,
-                    recordLengthMin:2000,
+                    sampleRateMin: SAMPLE_RATE_HZ,
+                    recordLengthMin: SAMPLES_COUNT,
                     triggerType: ScopeTriggerType.Edge);
 
                 //--- Run ---
-               // Application.Run(_mainForm);
+                //Application.Run(_mainForm);
             }
 
             void StartAcquisition(
@@ -97,13 +95,7 @@ namespace Knv.Sample.THDWithPCI5114
                     PrecisionTimeSpan timeout = new PrecisionTimeSpan(5.0);
                     long recordLength = _scopeSession.Acquisition.RecordLength; 
                     _scopeSession.Measurement.Initiate();
-
-
-
-
-
                     byteWaveforms = _scopeSession.Channels[channelName].Measurement.FetchByte(timeout, recordLength, byteWaveforms, out waveformInfo);
-
                     PlotWaveforms(byteWaveforms);
 
                 }
@@ -126,14 +118,6 @@ namespace Knv.Sample.THDWithPCI5114
             {
                 int rowIndex;
 
-                double[][] scaledRecords = new double[waveforms.Count][];
-
-                for (int i = 0; i < waveforms.Count; i++)
-                {
-                    scaledRecords[i] = waveforms[i].GetScaledData();
-                }
-
-
                 // -128... -3, -2, -1, 0, 1, 2, 3 ... 127
                 //
                 // 127  |
@@ -144,22 +128,16 @@ namespace Knv.Sample.THDWithPCI5114
 
                 string directory = "D:\\";
                 string prefix = "Knv.Sample.THDWithPCI5114";
-                var lines = new List<string>();
+
                 var wfs = new WaveformStorage();
-                wfs.Waveforms[0] = new Waveform() { Name = "Channel0" };
+                wfs.Waveforms[0] = new Waveform() { Name = "1kHz 4Vpp 50kSPS", DeltaX = 1.0 / SAMPLE_RATE_HZ };
 
-
-
-                lines.Add($"RowIndex;rawValue;byteValue;signedValue");
-                
                 for (rowIndex = 0; rowIndex < waveforms[0].SampleCount; rowIndex++)
                 { 
                     var rawValue = waveforms[0].Samples[rowIndex].Value;
                     byte byteValue = Convert.ToByte(rawValue);
                     sbyte signedValue = unchecked((sbyte)byteValue);
-                    lines.Add($"{rowIndex};{rawValue};{byteValue};{signedValue}");
                 }
-
 
                 if (!File.Exists(directory))
                     Directory.CreateDirectory(directory);
@@ -167,11 +145,6 @@ namespace Knv.Sample.THDWithPCI5114
                 var dt = DateTime.Now;
                 var fileName = $"{prefix}_{dt:yyyy}{dt:MM}{dt:dd}_{dt:HH}{dt:mm}{dt:ss}.csv";
                 wfs.SaveToCsv(fileName);
-
-                /*
-                using (var file = new StreamWriter($"{directory}\\{fileName}", true, Encoding.ASCII))
-                    lines.ForEach(file.WriteLine);
-                */
             }
 
             void CloseSession()
