@@ -42,8 +42,8 @@ namespace Knv.Sample.THDWithPCI5114
                     channelName: "0",
                     verticalRange: 10.0,
                     verticalOffset: 0.0,
-                    sampleRateMin: 4000,
-                    recordLengthMin:4000,
+                    sampleRateMin: 500000,
+                    recordLengthMin:2000,
                     triggerType: ScopeTriggerType.Edge);
 
                 //--- Run ---
@@ -66,7 +66,7 @@ namespace Knv.Sample.THDWithPCI5114
                     _scopeSession = new NIScope(resourceName, false, false);
                     //_scopeSession.DriverOperation.Warning += new EventHandler<ScopeWarningEventArgs>(DriverOperation_Warning);
 
-                    // Configure the vertical parameters.
+                    // --- Configure the vertical parameters ---
                     ScopeVerticalCoupling coupling = ScopeVerticalCoupling.DC;
                     double probeAttenuation = 1.0;
                     _scopeSession.Channels[channelName].Configure(verticalRange, verticalOffset, coupling, probeAttenuation, true);
@@ -96,23 +96,15 @@ namespace Knv.Sample.THDWithPCI5114
                     PrecisionTimeSpan timeout = new PrecisionTimeSpan(5.0);
                     long recordLength = _scopeSession.Acquisition.RecordLength; 
                     _scopeSession.Measurement.Initiate();
+
+
+
+
+
                     byteWaveforms = _scopeSession.Channels[channelName].Measurement.FetchByte(timeout, recordLength, byteWaveforms, out waveformInfo);
 
                     PlotWaveforms(byteWaveforms);
 
-                    StringBuilder offsetTextBuilder = new StringBuilder();
-                    StringBuilder gainFactorTextBuilder = new StringBuilder();
-                    for (int ii = 0; ii < waveformInfo.Length; ii++)
-                    {
-                        StringBuilder prefixTextBuilder = new StringBuilder();
-                        if (ii > 0)
-                        {
-                            prefixTextBuilder.Append("; ");
-                        }
-                        prefixTextBuilder.Append("Waveform " + ii + ": ");
-                        offsetTextBuilder.Append(prefixTextBuilder + waveformInfo[ii].Offset.ToString("E"));
-                        gainFactorTextBuilder.Append(prefixTextBuilder + waveformInfo[ii].Gain.ToString("E"));
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -132,23 +124,35 @@ namespace Knv.Sample.THDWithPCI5114
             void PlotWaveforms<T>(AnalogWaveformCollection<T> waveforms)
             {
                 int rowIndex;
+
                 double[][] scaledRecords = new double[waveforms.Count][];
+
                 for (int i = 0; i < waveforms.Count; i++)
                 {
                     scaledRecords[i] = waveforms[i].GetScaledData();
                 }
 
+
+                // -128... -3, -2, -1, 0, 1, 2, 3 ... 127
+                //
+                // 127  |
+                //      | 
+                //   0  |----------------------------
+                //      |
+                //-128  |
+
                 string directory = "D:\\";
                 string prefix = "Knv.Sample.THDWithPCI5114";
                 var lines = new List<string>();
-
+                
+                lines.Add($"RowIndex;rawValue;byteValue;signedValue");
+                
                 for (rowIndex = 0; rowIndex < waveforms[0].SampleCount; rowIndex++)
                 { 
-                    foreach (AnalogWaveform<T> waveform in waveforms)
-                    {
-                        waveform.Samples[rowIndex].Value.ToString();
-                    }
-                    lines.Add($"{rowIndex};{waveforms[0].Samples[rowIndex].Value}");
+                    var rawValue = waveforms[0].Samples[rowIndex].Value;
+                    byte byteValue = Convert.ToByte(rawValue);
+                    sbyte signedValue = unchecked((sbyte)byteValue);
+                    lines.Add($"{rowIndex};{rawValue};{byteValue};{signedValue}");
                 }
 
 
